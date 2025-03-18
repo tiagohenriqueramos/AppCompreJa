@@ -156,7 +156,8 @@ fun ProdutoForm(
 
 
             Column(
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier
+                    .padding(16.dp)
                     .verticalScroll(rememberScrollState())
 
             ) {
@@ -420,19 +421,24 @@ fun ProdutoCard(
                 Text(text = "Produto: ${produto.nome}", fontSize = 16.sp)
                 Text(text = "Marca: ${produto.marca}", fontSize = 16.sp)
                 Text(text = "Estoque: ${produto.estoque}", fontSize = 16.sp)
-                Text(text = "Preço: ${produto.preco}", fontSize = 16.sp)
                 Text(text = "Descrição: ${produto.descricao}", fontSize = 16.sp)
                 Text(text = "Categoria: ${produto.categoria}", fontSize = 16.sp)
-                Text(text = "Categoria: ${produto.categoria}", fontSize = 16.sp)
-                Text(text = "Preço Promocional: ${produto.precoPromocional}", fontSize = 16.sp)
                 Text(text = "Código de barras: ${produto.codigoBarra}", fontSize = 16.sp)
 
-                Text(
-                    text = if (produto.isPromocao) "Produto em promoção"
-                    else "preco normal", fontSize = 16.sp
-
-                )
-
+                if (produto.isPromocao) {
+                    Text(
+                        text = "Preço promocional: R$ ${produto.precoPromocional}",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Red
+                    )
+                } else {
+                    Text(
+                        text = "Preço: R$ ${produto.preco}",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
             IconButton(onClick = {
                 val produtoRepository = ProdutoRepository(context)
