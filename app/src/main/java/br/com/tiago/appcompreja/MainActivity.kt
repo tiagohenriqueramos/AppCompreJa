@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -17,14 +19,16 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -50,7 +55,8 @@ class MainActivity : ComponentActivity() {
             AppCompreJaTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    color = colorResource(id = R.color.laranja)
+
                 ) {
                     Column {
                         ProdutosScreen()
@@ -74,8 +80,8 @@ fun ProdutosScreen() {
     var descricaoState = remember { mutableStateOf("") }
     var categoriaState = remember { mutableStateOf("") }
     var codigoBarraState = remember { mutableStateOf("") }
+    var precoPromocionalState = remember { mutableStateOf("") }
     var promocaoState = remember { mutableStateOf(false) }
-
     var listaProdutosState = remember { mutableStateOf(produtoRepository.listarProdutos()) }
 
     Column {
@@ -87,6 +93,7 @@ fun ProdutosScreen() {
             descricao = descricaoState.value,
             categoria = categoriaState.value,
             codigoBarra = codigoBarraState.value,
+            precoPromocional = precoPromocionalState.value,
             promocao = promocaoState.value,
 
             onNomeChange = { nomeState.value = it },
@@ -96,6 +103,7 @@ fun ProdutosScreen() {
             onDescricaoChange = { descricaoState.value = it },
             onCategoriaChange = { categoriaState.value = it },
             onCodigoBarraChange = { codigoBarraState.value = it },
+            onPrecoPromocionalChange = { precoPromocionalState.value = it },
             onPromocaoChange = { promocaoState.value = it },
             atualizar = { listaProdutosState.value = produtoRepository.listarProdutos() }
         )
@@ -115,6 +123,7 @@ fun ProdutoForm(
     descricao: String,
     categoria: String,
     codigoBarra: String,
+    precoPromocional: String,
     promocao: Boolean,
 
     onNomeChange: (String) -> Unit,
@@ -124,121 +133,252 @@ fun ProdutoForm(
     onDescricaoChange: (String) -> Unit,
     onCategoriaChange: (String) -> Unit,
     onCodigoBarraChange: (String) -> Unit,
+    onPrecoPromocionalChange: (String) -> Unit,
     onPromocaoChange: (Boolean) -> Unit,
     atualizar: () -> Unit
 ) {
     val context = LocalContext.current
     val produtoRepository = ProdutoRepository(context)
     Column(
-        modifier = Modifier.padding(16.dp)
-    ) {
-        Text(
-            text = "Cadastro de produtos",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFFE91E63)
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        OutlinedTextField(
-            value = nome,
-            onValueChange = { onNomeChange(it) },
-            modifier = Modifier.fillMaxWidth(),
-            label = { Text(text = "Nome do produto") },
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Text,
-                capitalization = KeyboardCapitalization.Words
-            )
-        )
-        Spacer(modifier = Modifier.height(8.dp))
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 32.dp, vertical = 32.dp) // Espaço em cima e embaixo
 
-        OutlinedTextField(
-            value = marca,
-            onValueChange = { onMarcaChange(it) },
-            modifier = Modifier.fillMaxWidth(),
-            label = { Text(text = "Marca") },
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Text,
-                capitalization = KeyboardCapitalization.Words
-            )
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-
-
-        OutlinedTextField(
-            value = estoque,
-            onValueChange = { onEstoqueChange(it) },
-            modifier = Modifier.fillMaxWidth(),
-            label = { Text(text = "Estoque") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-
-        OutlinedTextField(
-            value = descricao,
-            onValueChange = { onDescricaoChange(it) },
-            modifier = Modifier.fillMaxWidth(),
-            label = { Text(text = "Descrição") }, keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Text,
-                capitalization = KeyboardCapitalization.Words
-            )
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-
-        OutlinedTextField(
-            value = categoria,
-            onValueChange = { onCategoriaChange(it) },
-            modifier = Modifier.fillMaxWidth(),
-            label = { Text(text = "Categoria") }, keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Text,
-                capitalization = KeyboardCapitalization.Words
-            )
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-
-        OutlinedTextField(
-            value = codigoBarra,
-            onValueChange = { onCodigoBarraChange(it) },
-            modifier = Modifier.fillMaxWidth(),
-            label = {
-                Text(text = "Código de barras")
-            }, keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Phone
-            )
-
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
+    )
+    {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 0.dp, max = 450.dp),
+            colors = CardDefaults.cardColors(containerColor = Color(0xfff9f6f6)),
+            elevation = CardDefaults.cardElevation(4.dp)
         ) {
-            Checkbox(checked = promocao, onCheckedChange = {
-                onPromocaoChange(it)
-            })
-            Text(text = "Em promoção")
-        }
 
-        Spacer(modifier = Modifier.height(8.dp))
-        Button(
-            onClick = {
-                val produto = Produto(
-                    nome = nome,
-                    marca = marca,
-                    preco = preco,
-                    estoque = estoque,
-                    descricao = descricao,
-                    categoria = categoria,
-                    codigoBarra = codigoBarra,
-                    isPromocao = promocao
+
+            Column(
+                modifier = Modifier.padding(16.dp)
+                    .verticalScroll(rememberScrollState())
+
+            ) {
+                Text(
+                    text = "Cadastro de produtos",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = colorResource(id = R.color.laranja)
                 )
-                produtoRepository.salvar(produto)
-                atualizar()
-            },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(
-                text = "CADASTRAR",
-                modifier = Modifier.padding(8.dp)
-            )
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = nome,
+                    onValueChange = { onNomeChange(it) },
+                    modifier = Modifier.fillMaxWidth(),
+                    label = {
+                        Text(
+                            text = "Nome do produto",
+                            color = colorResource(id = R.color.laranja)
+                        )
+                    },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        unfocusedBorderColor = colorResource(id = R.color.laranja),
+                        focusedBorderColor = colorResource(id = R.color.laranja)
+                    ),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Text,
+                        capitalization = KeyboardCapitalization.Words
+                    ),
+
+                    )
+                Spacer(modifier = Modifier.height(8.dp))
+
+                OutlinedTextField(
+                    value = marca,
+                    onValueChange = { onMarcaChange(it) },
+                    modifier = Modifier.fillMaxWidth(),
+                    label = {
+                        Text(
+                            text = "Marca",
+                            color = colorResource(id = R.color.laranja),
+
+                            )
+                    },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        unfocusedBorderColor = colorResource(id = R.color.laranja),
+                        focusedBorderColor = colorResource(id = R.color.laranja)
+                    ),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Text,
+                        capitalization = KeyboardCapitalization.Words
+                    )
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = preco,
+                    onValueChange = { onPrecoChange(it) },
+                    modifier = Modifier.fillMaxWidth(),
+                    label = {
+                        Text(
+                            text = "Preço",
+                            color = colorResource(id = R.color.laranja)
+                        )
+                    },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        unfocusedBorderColor = colorResource(id = R.color.laranja),
+                        focusedBorderColor = colorResource(id = R.color.laranja)
+                    ),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = estoque,
+                    onValueChange = { onEstoqueChange(it) },
+                    modifier = Modifier.fillMaxWidth(),
+                    label = {
+                        Text(
+                            text = "Estoque",
+                            color = colorResource(id = R.color.laranja)
+                        )
+                    },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        unfocusedBorderColor = colorResource(id = R.color.laranja),
+                        focusedBorderColor = colorResource(id = R.color.laranja)
+                    ),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+                OutlinedTextField(
+                    value = descricao,
+                    onValueChange = { onDescricaoChange(it) },
+                    modifier = Modifier.fillMaxWidth(),
+                    label = {
+                        Text(
+                            text = "Descrição",
+                            color = colorResource(id = R.color.laranja)
+                        )
+                    },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        unfocusedBorderColor = colorResource(id = R.color.laranja),
+                        focusedBorderColor = colorResource(id = R.color.laranja)
+                    ),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Text,
+                        capitalization = KeyboardCapitalization.Words
+                    )
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+                OutlinedTextField(
+                    value = categoria,
+                    onValueChange = { onCategoriaChange(it) },
+                    modifier = Modifier.fillMaxWidth(),
+                    label = {
+                        Text(
+                            text = "Categoria",
+                            color = colorResource(id = R.color.laranja)
+                        )
+                    },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        unfocusedBorderColor = colorResource(id = R.color.laranja),
+                        focusedBorderColor = colorResource(id = R.color.laranja)
+                    ),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Text,
+                        capitalization = KeyboardCapitalization.Words
+                    )
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+                OutlinedTextField(
+                    value = codigoBarra,
+                    onValueChange = { onCodigoBarraChange(it) },
+                    modifier = Modifier.fillMaxWidth(),
+                    label = {
+                        Text(
+                            text = "Código de barras",
+                            color = colorResource(id = R.color.laranja)
+
+                        )
+                    },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        unfocusedBorderColor = colorResource(id = R.color.laranja),
+                        focusedBorderColor = colorResource(id = R.color.laranja)
+                    ),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Phone
+                    )
+
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = precoPromocional,
+                    onValueChange = { onPrecoPromocionalChange(it) },
+                    modifier = Modifier.fillMaxWidth(),
+                    label = {
+                        Text(
+                            text = "Preço Promocional",
+                            color = colorResource(id = R.color.laranja)
+
+                        )
+                    },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        unfocusedBorderColor = colorResource(id = R.color.laranja),
+                        focusedBorderColor = colorResource(id = R.color.laranja)
+                    ),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Phone
+                    )
+
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Checkbox(
+                        checked = promocao, onCheckedChange = {
+                            onPromocaoChange(it)
+                        },
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = colorResource(id = R.color.laranja),
+                            uncheckedColor = colorResource(id = R.color.laranja),
+                            checkmarkColor = colorResource(id = R.color.branco_creme)
+                        )
+                    )
+                    Text(
+                        text = "Em promoção",
+                        color = colorResource(id = R.color.laranja)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+                Button(
+                    onClick = {
+                        val produto = Produto(
+                            nome = nome,
+                            marca = marca,
+                            preco = preco,
+                            estoque = estoque,
+                            descricao = descricao,
+                            categoria = categoria,
+                            codigoBarra = codigoBarra,
+                            precoPromocional = precoPromocional,
+                            isPromocao = promocao
+                        )
+                        produtoRepository.salvar(produto)
+                        atualizar()
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = colorResource(id = R.color.branco_creme),
+                        contentColor = colorResource(id = R.color.laranja)
+                    )
+                ) {
+                    Text(
+                        text = "CADASTRAR",
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
+
+            }
         }
     }
 }
@@ -266,7 +406,8 @@ fun ProdutoCard(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color.LightGray)
+        colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.branco_creme))
+
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically
@@ -276,18 +417,20 @@ fun ProdutoCard(
                     .padding(8.dp)
                     .weight(2f)
             ) {
-                Text(text = produto.nome, fontSize = 20.sp, fontWeight = FontWeight.Bold)
-                Text(text = produto.marca, fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                Text(text = produto.estoque, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                Text(text = "Produto: ${produto.nome}", fontSize = 16.sp)
+                Text(text = "Marca: ${produto.marca}", fontSize = 16.sp)
+                Text(text = "Estoque: ${produto.estoque}", fontSize = 16.sp)
+                Text(text = "Preço: ${produto.preco}", fontSize = 16.sp)
+                Text(text = "Descrição: ${produto.descricao}", fontSize = 16.sp)
+                Text(text = "Categoria: ${produto.categoria}", fontSize = 16.sp)
+                Text(text = "Categoria: ${produto.categoria}", fontSize = 16.sp)
+                Text(text = "Preço Promocional: ${produto.precoPromocional}", fontSize = 16.sp)
+                Text(text = "Código de barras: ${produto.codigoBarra}", fontSize = 16.sp)
 
-                Text(text = produto.preco, fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                Text(text = produto.descricao, fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                Text(text = produto.categoria, fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                Text(text = produto.codigoBarra, fontSize = 16.sp, fontWeight = FontWeight.Bold)
                 Text(
-                    text = if (produto.isPromocao) "produtoEmPromocao"
-                    else "preco normal", fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold
+                    text = if (produto.isPromocao) "Produto em promoção"
+                    else "preco normal", fontSize = 16.sp
+
                 )
 
             }

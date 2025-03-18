@@ -14,5 +14,6 @@ data class Produto(
     val descricao: String,
     val categoria: String,
     val codigoBarra: String,
+    val precoPromocional: String,
     @ColumnInfo(name = "is_promocao") var isPromocao: Boolean = false,
 )

@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import br.com.tiago.appcompreja.model.Produto
 
-@Database(entities = [Produto::class], version = 1)
+@Database(entities = [Produto::class], version = 4)
 abstract class ProdutoDb: RoomDatabase() {
     abstract fun produtoDao(): ProdutoDao
 
