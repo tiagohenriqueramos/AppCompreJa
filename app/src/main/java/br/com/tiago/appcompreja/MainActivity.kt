@@ -13,6 +13,12 @@ import br.com.tiago.appcompreja.vm.ProdutoScreenViewModelFactory
 import br.com.tiago.fiap_esg_app.produto.ProdutoScreenViewModel
 import br.com.tiago.fiap_esg_app.produto.ProdutosScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import br.com.tiago.appcompreja.vm.ClientePJScreenViewModelFactory
+import br.com.tiago.fiap_esg_app.produto.ClientePJScreen
+import br.com.tiago.fiap_esg_app.produto.ClientePJScreenViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,17 +26,22 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             AppCompreJaTheme {
+                val navController = rememberNavController()
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = colorResource(id = R.color.laranja)
-
                 ) {
-                    val viewModel: ProdutoScreenViewModel = viewModel(
-                        factory = ProdutoScreenViewModelFactory(this)
-                    )
-                    ProdutosScreen(viewModel)
+                    NavHost(navController = navController, startDestination = "produtos") {
+                        composable("produtos") {
+                            ProdutosScreen(navController)
+                        }
+                        composable("clientes") {
+                            ClientePJScreen(navController)
+                        }
+                    }
                 }
             }
         }
+
     }
 }
