@@ -17,6 +17,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import br.com.tiago.appcompreja.vm.ClientePJScreenViewModelFactory
+import br.com.tiago.fiap_esg_app.produto.ClientePFScreen
 import br.com.tiago.fiap_esg_app.produto.ClientePJScreen
 import br.com.tiago.fiap_esg_app.produto.ClientePJScreenViewModel
 
@@ -37,6 +38,9 @@ class MainActivity : ComponentActivity() {
                         }
                         composable("clientes") {
                             ClientePJScreen(navController)
+                        }
+                        composable("clientesPF") {
+                            ClientePFScreen(navController)
                         }
                     }
                 }
